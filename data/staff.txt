@@ -1,0 +1,2 @@
+Marie,Boss,500.0,Cheers!,PATRONNE
+Paul,Bart,100.0,Let's get this party started!,BARTENDER
