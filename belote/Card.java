@@ -7,15 +7,14 @@ import utils.Rank;
  * Class representing a card in the belote deck.
  */
 public class Card {
-    private Suit suit;
-    private Rank rank;
+    private final Suit suit;
+    private final Rank rank;
 
     public Card(Suit suit, Rank rank) {
         this.suit = suit;
         this.rank = rank;
     }
 
-    // Getters
     public Suit getSuit() {
         return suit;
     }
@@ -24,7 +23,6 @@ public class Card {
         return rank;
     }
 
-    // Methods
     public String getCardInfo() {
         return rank + " of " + suit;
     }

@@ -6,25 +6,13 @@ import java.util.List;
 import utils.Suit;
 import utils.Rank;
 
-/**
- * Class representing the deck of cards for a belote game.
- */
 public class Deck {
     private List<Card> cards;
 
     public Deck() {
-        cards = new ArrayList<>();
-        // Initialize the deck with 32 cards (belote uses a 32-card deck)
-        for (Suit suit : Suit.values()) {
-            for (Rank rank : Rank.values()) {
-                if (rank.getValue() >= 7) { // Only cards from 7 to Ace are used in belote
-                    cards.add(new Card(suit, rank));
-                }
-            }
-        }
+        resetDeck();
     }
 
-    // Methods
     public void shuffle() {
         Collections.shuffle(cards);
         System.out.println("Deck shuffled.");
@@ -41,15 +29,26 @@ public class Deck {
     }
 
     public void resetDeck() {
-        cards.clear();
+        cards = new ArrayList<>();
         for (Suit suit : Suit.values()) {
             for (Rank rank : Rank.values()) {
-                if (rank.getValue() >= 7) {
+                if (rank.getValue() >= 7) { // Only cards from 7 to Ace are used in belote
                     cards.add(new Card(suit, rank));
                 }
             }
         }
         System.out.println("Deck reset.");
+    }
+
+    public List<Card> dealHand(int numCards) {
+        if (cards.size() < numCards) {
+            System.out.println("Not enough cards left in the deck to deal a full hand. Reshuffling the deck.");
+            resetDeck();
+            shuffle();
+        }
+        List<Card> hand = new ArrayList<>(cards.subList(0, numCards));
+        cards.subList(0, numCards).clear();
+        return hand;
     }
 
     public Card dealCard() {
@@ -58,13 +57,5 @@ public class Deck {
             return null;
         }
         return cards.remove(0);
-    }
-
-    public List<Card> dealHand(int numCards) {
-        List<Card> hand = new ArrayList<>();
-        for (int i = 0; i < numCards; i++) {
-            hand.add(dealCard());
-        }
-        return hand;
     }
 }

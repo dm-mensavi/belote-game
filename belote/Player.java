@@ -3,23 +3,22 @@ package belote;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Class representing a player in the belote game.
- */
 public class Player {
-    private String name;
+    private final String name;
     private String teamName;
-    private List<Card> hand;
-    private int score;
+    private final List<Card> hand = new ArrayList<>();
+    private int score = 0;
 
     public Player(String name, String teamName) {
         this.name = name;
         this.teamName = teamName;
-        this.hand = new ArrayList<>();
-        this.score = 0;
     }
 
-    // Getters and Setters
+    public Player(String name) {
+        this.name = name;
+        this.teamName = null;
+    }
+
     public String getName() {
         return name;
     }
@@ -28,13 +27,12 @@ public class Player {
         return teamName;
     }
 
-    public List<Card> getHand() {
-        return hand;
+    public void setTeamName(String teamName) {
+        this.teamName = teamName;
     }
 
-    public void receiveCard(Card card) {
-        hand.add(card);
-        System.out.println(name + " received a card: " + card);
+    public List<Card> getHand() {
+        return hand;
     }
 
     public void receiveHand(List<Card> cards) {
@@ -42,12 +40,14 @@ public class Player {
         System.out.println(name + " received a full hand of cards.");
     }
 
-    public void playCard(Card card) {
-        if (hand.contains(card)) {
-            hand.remove(card);
+    public Card playFirstCard() {
+        if (!hand.isEmpty()) {
+            Card card = hand.remove(0);  // Remove the first card in the hand
             System.out.println(name + " played: " + card);
+            return card;  // Return the card that was played
         } else {
-            System.out.println(name + " doesn't have this card.");
+            System.out.println(name + " has no cards left to play.");
+            return null;
         }
     }
 
@@ -63,4 +63,5 @@ public class Player {
     public void resetHand() {
         hand.clear();
     }
+    
 }

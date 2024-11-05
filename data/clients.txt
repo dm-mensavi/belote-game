@@ -1,4 +1,4 @@
 John Smith,Johnny,20.0,Yay!,MALE,Beer,Water,red
 Emma Johnson,Em,6.0,Woo!,MALE,Wine,Water,Yellow
-Michael Davis,Mike,15.0,Hooray!,MALE,Whiskey,Water,blue
+Michael Davis,Mike,3.0,Hooray!,MALE,Whiskey,Water,blue
 Sophia Thompson,Sophie,25.0,Cheers!,FEMALE,Vodka,Water,silver
