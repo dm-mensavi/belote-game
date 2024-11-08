@@ -31,6 +31,7 @@ public abstract class Human {
 
     public void setWallet(double wallet) {
         this.wallet = wallet;
+        saveHumanData();
     }
 
     public String getSignificantShout() {
@@ -48,5 +49,10 @@ public abstract class Human {
     // Introduce method to be overridden by subclasses
     public void introduce() {
         speak("Hello, my name is " + getFirstName() + " and I go by " + getNickname() + ".");
+    }
+
+    // Method to save updated human data to the appropriate file
+    protected void saveHumanData() {
+        // This method can be overridden by subclasses if needed
     }
 }

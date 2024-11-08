@@ -1,0 +1,4 @@
+Johnny,JohnnyBoy,150,Yeehaw!,MALE,Beer,Vodka,T-shirt
+Em,EmTheGreat,200,Cheers!,FEMALE,Wine,Whiskey,Necklace
+Mike,MikeTheMighty,100,Let's party!,MALE,Whiskey,Beer,Hoodie
+Sophie,SophisticatedSophie,250,Salut!,FEMALE,Champagne,Wine,Earrings

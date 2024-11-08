@@ -2,9 +2,6 @@ package tournament;
 
 
 import belote.Player;
-import tournament.Team;
-import tournament.Tournament;
-
 
 import java.util.Scanner;
 

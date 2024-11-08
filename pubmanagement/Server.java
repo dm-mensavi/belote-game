@@ -33,6 +33,14 @@ public class Server extends Human {
         }
     }
 
+    public Server(String firstName, String nickname, double wallet) {
+        super(firstName, nickname, wallet, "Default Shout");
+        this.gender = Gender.MALE; // or set a default gender if appropriate
+        this.strength = 5;         // default strength or charm level
+        this.charm = 0;
+    }
+    
+
     // Getters
     public int getStrength() {
         return strength;
@@ -59,11 +67,15 @@ public class Server extends Human {
         double price = drink.getSalePrice();
         client.pay(price);
 
+        // Update client's data in the database
+        client.saveClientData();
+
         // Behavioral impact based on server's gender and characteristics
         if (gender == Gender.FEMALE && charm > 5) {
             // Clients consume more when served by a charming waitress
             System.out.println(client.getNickname() + " consumes more due to the charm of " + getNickname() + ".");
             client.drink(drink);  // Simulate the client consuming another drink
+            client.saveClientData();  // Update client data
         } else if (gender == Gender.MALE && strength > 5 && client.getAlcoholLevel() > 5) {
             // Strong male servers keep clients in check
             System.out.println(client.getNickname() + " behaves more reasonably due to " + getNickname() + "'s strength.");
@@ -101,5 +113,11 @@ public class Server extends Human {
     @Override
     public void speak(String message) {
         System.out.println("Server: " + message);
+    }
+
+    // Method to save updated wallet or other data to staff.txt file
+    private void saveServerData() {
+        // Read existing staff data, update this server's data, and save back to file
+        PubEnvironment.updateStaffInDatabase(this);
     }
 }

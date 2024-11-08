@@ -65,9 +65,17 @@ public class Drink {
     // Setters
     public void setSalePrice(double salePrice) {
         this.salePrice = salePrice;
+        saveDrinkData();
     }
 
     public void setPurchasePrice(double purchasePrice) {
         this.purchasePrice = purchasePrice;
+        saveDrinkData();
+    }
+
+    // Method to save updated drink data to drinks.txt file
+    private void saveDrinkData() {
+        // Read existing drinks data, update this drink's data, and save back to file
+        PubEnvironment.updateDrinkInDatabase(this);
     }
 }

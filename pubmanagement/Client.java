@@ -1,7 +1,7 @@
 package pubmanagement;
 
 import utils.Gender;
-import java.util.List;  // Ensure this import is present
+import java.util.List;
 
 /**
  * Class representing a client in the bar.
@@ -49,6 +49,7 @@ public class Client extends Human {
 
     public void setFavoriteDrink(Drink favoriteDrink) {
         this.favoriteDrink = favoriteDrink;
+        saveClientData();
     }
 
     public Drink getBackupDrink() {
@@ -57,6 +58,7 @@ public class Client extends Human {
 
     public void setBackupDrink(Drink backupDrink) {
         this.backupDrink = backupDrink;
+        saveClientData();
     }
 
     public int getAlcoholLevel() {
@@ -71,6 +73,7 @@ public class Client extends Human {
         this.gender = newGender;
         this.clothingOrJewelry = newClothingOrJewelry;
         speak("I have changed gender to " + newGender + " and now wear " + clothingOrJewelry + ".");
+        saveClientData();
     }
 
     public boolean canReceiveDrink() {
@@ -79,6 +82,7 @@ public class Client extends Human {
 
     public void setCanReceiveDrink(boolean canReceiveDrink) {
         this.canReceiveDrink = canReceiveDrink;
+        saveClientData();
     }
 
     public String getClothingOrJewelry() {
@@ -96,6 +100,7 @@ public class Client extends Human {
         if (drink.isAlcoholic()) {
             alcoholLevel += drink.getAlcoholPoints();
             checkForQualifierUsage();
+            saveClientData();  // Save updated alcohol level
         }
     }
 
@@ -118,8 +123,13 @@ public class Client extends Human {
      */
     public void receiveDrink(Drink drink) {
         if (canReceiveDrink) {
-            drink(drink);  // Client drinks the offered drink
-            speak("I have received a " + drink.getName() + ".");
+            if (getWallet() >= drink.getSalePrice()) {
+                drink(drink);  // Client drinks the offered drink
+                pay(drink.getSalePrice());
+                speak("I have received a " + drink.getName() + ".");
+            } else {
+                speak("I don't have enough money to pay for this drink.");
+            }
         } else {
             speak("I cannot receive any more drinks.");
         }
@@ -157,8 +167,9 @@ public class Client extends Human {
         if (getWallet() >= amount) {
             setWallet(getWallet() - amount);  // Deduct the amount from the wallet
             speak("I paid " + amount + " euros.");
+            saveClientData();
         } else {
-            speak("I don't have enough money to pay for this drink.");
+            speak("I don't have enough money to pay for this.");
         }
     }
 
@@ -170,4 +181,16 @@ public class Client extends Human {
             client.speak(client.getSignificantShout());
         }
     }
+
+    // Method to save updated client data to clients.txt file
+    public void saveClientData() {
+        // Read existing clients data, update this client's data, and save back to file
+        PubEnvironment.updateClientInDatabase(this);
+    }
+
+    @Override
+    protected void saveHumanData() {
+        saveClientData();
+    }
 }
+

@@ -1,10 +1,13 @@
-import java.util.Scanner;
+
+
+import pubmanagement.PubEnvironment;
 import belote.MainBeloteGame;
 import tournament.TournamentEnvironment;
+import java.util.Scanner;
 
 public class MainApp {
     public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
+        Scanner scanner = new Scanner(System.in);  // Single Scanner instance
         boolean keepRunning = true;
 
         while (keepRunning) {
@@ -20,7 +23,7 @@ public class MainApp {
                 scanner.nextLine();  // Consume newline
 
                 switch (choice) {
-                    case 1 -> PubEnvironment.initializePub();
+                    case 1 -> PubEnvironment.initializePub(scanner);  // Pass Scanner
                     case 2 -> MainBeloteGame.startBeloteGame();
                     case 3 -> TournamentEnvironment.startTournament();
                     case 4 -> {
@@ -31,10 +34,10 @@ public class MainApp {
                 }
             } else {
                 System.out.println("Invalid input. Please enter a number.");
-                scanner.nextLine();  // Clear invalid input
+                scanner.nextLine(); // Clear invalid input
             }
         }
 
-        scanner.close();
+        scanner.close();  // Close the Scanner here
     }
 }

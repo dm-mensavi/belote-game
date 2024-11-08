@@ -41,6 +41,7 @@ public class Patronne extends Human {
             double collectedAmount = cash - threshold;
             bartender.addToCashRegister(-collectedAmount); // Reducing the excess cash
             setWallet(getWallet() + collectedAmount); // Adding to Patronne's wallet
+            saveWallet(); // Save updated wallet to file
             speak("I have collected " + collectedAmount + " euros from the cash register.");
         } else {
             speak("There is not enough excess cash to collect right now.");
@@ -70,6 +71,7 @@ public class Patronne extends Human {
      */
     public void stopServing(Client client) {
         client.setCanReceiveDrink(false); // The client can no longer receive drinks
+        client.saveClientData();          // Save updated client data
         speak("Stop serving " + client.getNickname() + " immediately.");
     }
 
@@ -97,5 +99,11 @@ public class Patronne extends Human {
     @Override
     public void speak(String message) {
         super.speak(message + " (Patronne)");
+    }
+
+    // Method to save updated wallet to staff.txt file
+    private void saveWallet() {
+        // Read existing staff data, update this patronne's wallet, and save back to file
+        PubEnvironment.updateStaffInDatabase(this);
     }
 }

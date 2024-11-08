@@ -1,9 +1,8 @@
 package pubmanagement;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.Random;
 
 /**
  * Class representing the bar.
@@ -14,14 +13,15 @@ public class Bar {
     private Bartender bartender;
     private List<Server> servers;
     private List<Client> clients;
-    private Map<Drink, Integer> stock;  // Key: Drink, Value: Quantity
-    private List<Table> tables;  // Tables in the bar
+    private List<Drink> stockDrinks; // List of drink types in stock
+    private List<Integer> stockQuantities; // List of quantities corresponding to each drink
+    private List<Table> tables; // Tables in the bar
 
     /**
      * Constructor for the Bar class.
      *
-     * @param name    The name of the bar.
-     * @param owner   The owner of the bar (Patronne).
+     * @param name      The name of the bar.
+     * @param owner     The owner of the bar (Patronne).
      * @param bartender The bartender working at the bar.
      */
     public Bar(String name, Patronne owner, Bartender bartender) {
@@ -30,7 +30,8 @@ public class Bar {
         this.bartender = bartender;
         this.servers = new ArrayList<>();
         this.clients = new ArrayList<>();
-        this.stock = new HashMap<>();
+        this.stockDrinks = new ArrayList<>();
+        this.stockQuantities = new ArrayList<>();
         this.tables = new ArrayList<>();
         initializeTables();
     }
@@ -75,7 +76,7 @@ public class Bar {
     public void addClient(Client client) {
         clients.add(client);
         System.out.println(client.getNickname() + " enters the bar.");
-        seatClientAtTable(client);  // Attempt to seat the client at a table upon entry
+        seatClientAtTable(client); // Attempt to seat the client at a table upon entry
     }
 
     public void removeClient(Client client) {
@@ -96,25 +97,36 @@ public class Bar {
 
     // Stock management: receiving stock
     public void receiveStock(Drink drink, int quantity) {
-        stock.put(drink, stock.getOrDefault(drink, 0) + quantity);  // Add or update stock
-        System.out.println("Received " + quantity + " units of " + drink.getName() + ". Current stock: " + stock.get(drink));
+        int index = stockDrinks.indexOf(drink);
+        if (index != -1) {
+            // Drink already in stock, update quantity
+            int currentQuantity = stockQuantities.get(index);
+            stockQuantities.set(index, currentQuantity + quantity);
+        } else {
+            // New drink, add to stock
+            stockDrinks.add(drink);
+            stockQuantities.add(quantity);
+        }
+        System.out.println("Bar stock updated: " + drink.getName() + " now has " + getDrinkStock(drink) + " units.");
     }
 
     // Stock management: check current stock level for a specific drink
     public int getDrinkStock(Drink drink) {
-        return stock.getOrDefault(drink, 0); // Return 0 if the drink is not found
+        int index = stockDrinks.indexOf(drink);
+        return index != -1 ? stockQuantities.get(index) : 0;
     }
 
     // Serving drinks
     public boolean serveDrink(Client client, Drink drink) {
         if (!client.canReceiveDrink()) {
             System.out.println(client.getNickname() + " is no longer allowed to be served.");
-            return false;  // Client cannot receive drinks
+            return false; // Client cannot receive drinks
         }
 
         int currentStock = getDrinkStock(drink);
         if (currentStock > 0) {
-            stock.put(drink, currentStock - 1); // Reduce stock by 1
+            int index = stockDrinks.indexOf(drink);
+            stockQuantities.set(index, currentStock - 1); // Reduce stock by 1
             bartender.serveDrink(client, drink);
             return true;
         } else {
@@ -137,8 +149,56 @@ public class Bar {
         return bartender;
     }
 
-    // define a method for getting a list of all servers
+    // Get list of servers
     public List<Server> getServers() {
         return servers;
     }
+
+    // Display stock levels
+    public void displayStockLevels() {
+        System.out.println("Current stock levels:");
+        if (stockDrinks.size() == 0){
+            System.out.println("No drinks in stock.");
+            return;
+        }
+        for (int i = 0; i < stockDrinks.size(); i++) {
+            String drinkName = stockDrinks.get(i).getName();
+            int stockQuantity = stockQuantities.get(i);
+            if (stockQuantity == 0) {
+                System.out.println(drinkName + ": Out of stock");
+            } else {
+                System.out.println(drinkName + ": " + stockQuantity + " units");
+            }
+        }
+    }
+
+    /**
+     * Method to get the available drinks in the bar.
+     *
+     * @return The list of available drinks.
+     */
+    public List<Drink> getAvailableDrinks() {
+        List<Drink> availableDrinks = new ArrayList<>();
+        for (int i = 0; i < stockDrinks.size(); i++) {
+            if (stockQuantities.get(i) > 0) {
+                availableDrinks.add(stockDrinks.get(i));
+            }
+        }
+        return availableDrinks;
+    }
+
+public List<Drink> getFixedDrinks() {
+    List<Drink> drinksToSupply = new ArrayList<>();
+    List<Drink> availableDrinks = getAvailableDrinks(); // Assuming this method retrieves available drinks
+    Random random = new Random();
+
+    for (Drink drink : availableDrinks) {
+        int quantity = random.nextInt(3) + 3; // Generates a quantity between 3 and 5
+        Drink drinkToSupply = new Drink(drink.getName(), drink.getPurchasePrice(), drink.getSalePrice(), quantity);
+        drinksToSupply.add(drinkToSupply);
+    }
+
+    return drinksToSupply;
+}
+    
 }
