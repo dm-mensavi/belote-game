@@ -1,5 +1,6 @@
 import java.util.Scanner;
 import belote.MainBeloteGame;
+import tournament.TournamentEnvironment;
 
 public class MainApp {
     public static void main(String[] args) {
@@ -11,7 +12,8 @@ public class MainApp {
             System.out.println("Please select an option:");
             System.out.println("1. Manage Pub");
             System.out.println("2. Play Belote Game");
-            System.out.println("3. Quit");
+            System.out.println("3. Play Belote Tournament");
+            System.out.println("4. Quit");
 
             if (scanner.hasNextInt()) {
                 int choice = scanner.nextInt();
@@ -20,7 +22,8 @@ public class MainApp {
                 switch (choice) {
                     case 1 -> PubEnvironment.initializePub();
                     case 2 -> MainBeloteGame.startBeloteGame();
-                    case 3 -> {
+                    case 3 -> TournamentEnvironment.startTournament();
+                    case 4 -> {
                         System.out.println("Exiting the application. Goodbye!");
                         keepRunning = false;
                     }

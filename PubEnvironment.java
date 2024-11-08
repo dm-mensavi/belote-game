@@ -1,6 +1,15 @@
-import pubmanagement.*;
+
 import utils.*;
 import java.util.Scanner;
+
+import pubmanagement.Bar;
+import pubmanagement.Bartender;
+import pubmanagement.Client;
+import pubmanagement.Drink;
+import pubmanagement.Human;
+import pubmanagement.Patronne;
+import pubmanagement.Server;
+
 import java.util.List;
 import java.util.ArrayList;
 import java.io.*;

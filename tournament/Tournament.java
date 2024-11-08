@@ -2,21 +2,21 @@ package tournament;
 
 import belote.BeloteGame;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.Scanner;
 
 /**
  * Class representing a belote tournament.
  */
 public class Tournament {
     private List<Team> teams;
-    private Map<Team, Integer> scoreBoard;
     private boolean isOngoing;
 
+    /**
+     * Constructor for the Tournament class.
+     */
     public Tournament() {
         this.teams = new ArrayList<>();
-        this.scoreBoard = new HashMap<>();
         this.isOngoing = false;
     }
 
@@ -29,6 +29,10 @@ public class Tournament {
         return isOngoing;
     }
 
+    /**
+     * Registers a team for the tournament if it hasn't started and if the team is unique.
+     * @param team the team to register.
+     */
     public void registerTeam(Team team) {
         if (isOngoing) {
             System.out.println("The tournament has already started. No more teams can join.");
@@ -36,11 +40,13 @@ public class Tournament {
             System.out.println("Team " + team.getTeamName() + " is already registered.");
         } else {
             teams.add(team);
-            scoreBoard.put(team, 0);
             System.out.println("Team " + team.getTeamName() + " has been registered for the tournament.");
         }
     }
 
+    /**
+     * Starts the tournament if there are enough teams.
+     */
     public void startTournament() {
         if (teams.size() < 2) {
             System.out.println("A tournament requires at least 2 teams.");
@@ -50,6 +56,11 @@ public class Tournament {
         System.out.println("The belote tournament has started with " + teams.size() + " teams!");
     }
 
+    /**
+     * Plays a match between two teams and updates their scores.
+     * @param team1 the first team.
+     * @param team2 the second team.
+     */
     public void playMatch(Team team1, Team team2) {
         if (!isOngoing) {
             System.out.println("The tournament hasn't started yet.");
@@ -57,47 +68,47 @@ public class Tournament {
         }
 
         BeloteGame game = new BeloteGame();
-        game.addPlayer(team1.getPlayers().get(0));
-        game.addPlayer(team1.getPlayers().get(1));
-        game.addPlayer(team2.getPlayers().get(0));
-        game.addPlayer(team2.getPlayers().get(1));
+        Scanner scanner = new Scanner(System.in);
+        game.addPlayerToTeam(scanner, team1.getPlayers().get(0));
+        game.addPlayerToTeam(scanner, team1.getPlayers().get(1));
+        game.addPlayerToTeam(scanner, team2.getPlayers().get(0));
+        game.addPlayerToTeam(scanner, team2.getPlayers().get(1));
+            
 
         game.startGame();
         game.playRound();
 
-        // After the game, we will determine a random winner for simplicity here.
         int team1Score = team1.getScore();
         int team2Score = team2.getScore();
 
-        // Assume some simple logic for winner determination
+        // Determine winner and award points
         if (team1Score > team2Score) {
-            team1.addScore(3); // Winning team gets 3 points
+            team1.addScore(3);
             System.out.println("Team " + team1.getTeamName() + " wins the match.");
         } else if (team2Score > team1Score) {
-            team2.addScore(3); // Winning team gets 3 points
+            team2.addScore(3);
             System.out.println("Team " + team2.getTeamName() + " wins the match.");
         } else {
-            team1.addScore(1); // Draw, both teams get 1 point
+            team1.addScore(1);
             team2.addScore(1);
             System.out.println("The match ended in a draw.");
         }
-
-        updateScoreBoard(team1);
-        updateScoreBoard(team2);
     }
 
-    public void updateScoreBoard(Team team) {
-        scoreBoard.put(team, team.getScore());
-        System.out.println("Scoreboard updated for team " + team.getTeamName());
-    }
-
+    /**
+     * Displays the current scoreboard for the tournament.
+     */
     public void displayScoreBoard() {
         System.out.println("Current Tournament Scoreboard:");
-        for (Map.Entry<Team, Integer> entry : scoreBoard.entrySet()) {
-            System.out.println(entry.getKey().getTeamName() + ": " + entry.getValue() + " points");
+        for (Team team : teams) {
+            System.out.println(team.getTeamName() + ": " + team.getScore() + " points");
         }
     }
 
+    /**
+     * Determines and returns the winner of the tournament.
+     * @return the winning team.
+     */
     public Team getWinner() {
         if (!isOngoing) {
             System.out.println("The tournament hasn't started yet.");
@@ -120,6 +131,9 @@ public class Tournament {
         return winner;
     }
 
+    /**
+     * Ends the tournament and announces the winner.
+     */
     public void endTournament() {
         if (!isOngoing) {
             System.out.println("The tournament hasn't started yet.");

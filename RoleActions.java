@@ -1,7 +1,14 @@
-import pubmanagement.*;
+
 import utils.Gender;
 
 import java.util.Scanner;
+
+import pubmanagement.Bar;
+import pubmanagement.Bartender;
+import pubmanagement.Client;
+import pubmanagement.Drink;
+import pubmanagement.Patronne;
+import pubmanagement.Server;
 
 public class RoleActions {
 
