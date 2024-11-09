@@ -79,6 +79,21 @@ public class Bar {
         seatClientAtTable(client); // Attempt to seat the client at a table upon entry
     }
 
+    // addDrinks
+    public void addDrinks(Drink drink, int quantity) {
+        int index = stockDrinks.indexOf(drink);
+        if (index != -1) {
+            // Drink already in stock, update quantity
+            int currentQuantity = stockQuantities.get(index);
+            stockQuantities.set(index, currentQuantity + quantity);
+        } else {
+            // New drink, add to stock
+            stockDrinks.add(drink);
+            stockQuantities.add(quantity);
+        }
+        System.out.println("Bar stock updated: " + drink.getName() + " now has " + getDrinkStock(drink) + " units.");
+    }
+
     public void removeClient(Client client) {
         clients.remove(client);
         System.out.println(client.getNickname() + " leaves the bar.");
@@ -110,10 +125,13 @@ public class Bar {
         System.out.println("Bar stock updated: " + drink.getName() + " now has " + getDrinkStock(drink) + " units.");
     }
 
-    // Stock management: check current stock level for a specific drink
     public int getDrinkStock(Drink drink) {
         int index = stockDrinks.indexOf(drink);
-        return index != -1 ? stockQuantities.get(index) : 0;
+        if (index != -1) {
+            return stockQuantities.get(index);
+        } else {
+            return 0;
+        }
     }
 
     // Serving drinks
@@ -157,7 +175,7 @@ public class Bar {
     // Display stock levels
     public void displayStockLevels() {
         System.out.println("Current stock levels:");
-        if (stockDrinks.size() == 0){
+        if (stockDrinks.size() == 0) {
             System.out.println("No drinks in stock.");
             return;
         }
@@ -187,18 +205,18 @@ public class Bar {
         return availableDrinks;
     }
 
-public List<Drink> getFixedDrinks() {
-    List<Drink> drinksToSupply = new ArrayList<>();
-    List<Drink> availableDrinks = getAvailableDrinks(); // Assuming this method retrieves available drinks
-    Random random = new Random();
+    public List<Drink> getFixedDrinks() {
+        List<Drink> drinksToSupply = new ArrayList<>();
+        List<Drink> availableDrinks = getAvailableDrinks(); // Assuming this method retrieves available drinks
+        Random random = new Random();
 
-    for (Drink drink : availableDrinks) {
-        int quantity = random.nextInt(3) + 3; // Generates a quantity between 3 and 5
-        Drink drinkToSupply = new Drink(drink.getName(), drink.getPurchasePrice(), drink.getSalePrice(), quantity);
-        drinksToSupply.add(drinkToSupply);
+        for (Drink drink : availableDrinks) {
+            int quantity = random.nextInt(3) + 3; // Generates a quantity between 3 and 5
+            Drink drinkToSupply = new Drink(drink.getName(), drink.getPurchasePrice(), drink.getSalePrice(), quantity);
+            drinksToSupply.add(drinkToSupply);
+        }
+
+        return drinksToSupply;
     }
 
-    return drinksToSupply;
-}
-    
 }

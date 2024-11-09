@@ -56,8 +56,6 @@ public class PubEnvironment {
                 .filter(h -> h instanceof Server)
                 .forEach(server -> bar.addServer((Server) server));
 
-        // Add clients to the bar
-        clients.forEach(bar::addClient);
 
         // Start interactive gameplay
         System.out.println("Welcome to Pub Management Simulation!");
@@ -80,7 +78,7 @@ public class PubEnvironment {
                 case 3 -> RoleActions.serverActions(scanner, bar, clients, drinks);
                 case 4 -> {
                     if (supplier != null) {
-                        RoleActions.supplierActions(scanner, supplier, bar);
+                        RoleActions.supplierActions(scanner, supplier, bar, drinks);
                     } else {
                         System.out.println("No supplier is available.");
                     }
@@ -124,7 +122,8 @@ public class PubEnvironment {
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] data = line.split(",");
-                if (data.length < 4) continue;
+                if (data.length < 4)
+                    continue;
                 String name = data[0];
                 double salePrice = Double.parseDouble(data[1]);
                 double purchasePrice = Double.parseDouble(data[2]);
@@ -144,7 +143,8 @@ public class PubEnvironment {
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] data = line.split(",");
-                if (data.length < 5) continue;
+                if (data.length < 5)
+                    continue;
                 String firstName = data[0];
                 String nickname = data[1];
                 double wallet = Double.parseDouble(data[2]);
@@ -175,7 +175,8 @@ public class PubEnvironment {
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] data = line.split(",");
-                if (data.length < 8) continue;
+                if (data.length < 8)
+                    continue;
                 String firstName = data[0];
                 String nickname = data[1];
                 double wallet = Double.parseDouble(data[2]);
@@ -184,7 +185,8 @@ public class PubEnvironment {
                 Drink favoriteDrink = drinks.stream().filter(d -> d.getName().equals(data[5])).findFirst().orElse(null);
                 Drink backupDrink = drinks.stream().filter(d -> d.getName().equals(data[6])).findFirst().orElse(null);
                 String clothingOrJewelry = data[7];
-                clients.add(new Client(firstName, nickname, wallet, shout, gender, favoriteDrink, backupDrink, clothingOrJewelry));
+                clients.add(new Client(firstName, nickname, wallet, shout, gender, favoriteDrink, backupDrink,
+                        clothingOrJewelry));
             }
         } catch (IOException e) {
             System.out.println("Error loading clients from file: " + e.getMessage());
@@ -196,7 +198,8 @@ public class PubEnvironment {
     public static void saveDrinksToFile(List<Drink> drinks, String filePath) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
             for (Drink drink : drinks) {
-                writer.write(drink.getName() + "," + drink.getSalePrice() + "," + drink.getPurchasePrice() + "," + drink.getAlcoholPoints());
+                writer.write(drink.getName() + "," + drink.getSalePrice() + "," + drink.getPurchasePrice() + ","
+                        + drink.getAlcoholPoints());
                 writer.newLine();
             }
         } catch (IOException e) {
@@ -209,14 +212,19 @@ public class PubEnvironment {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
             for (Human human : staff) {
                 if (human instanceof Patronne) {
-                    writer.write(human.getFirstName() + "," + human.getNickname() + "," + human.getWallet() + "," + human.getSignificantShout() + ",PATRONNE");
+                    writer.write(human.getFirstName() + "," + human.getNickname() + "," + human.getWallet() + ","
+                            + human.getSignificantShout() + ",PATRONNE");
                 } else if (human instanceof Bartender) {
-                    writer.write(human.getFirstName() + "," + human.getNickname() + "," + human.getWallet() + "," + human.getSignificantShout() + ",BARTENDER");
+                    writer.write(human.getFirstName() + "," + human.getNickname() + "," + human.getWallet() + ","
+                            + human.getSignificantShout() + ",BARTENDER");
                 } else if (human instanceof Server) {
                     Server server = (Server) human;
-                    writer.write(server.getFirstName() + "," + server.getNickname() + "," + server.getWallet() + "," + server.getSignificantShout() + ",SERVER," + server.getGender() + "," + (server.getGender() == Gender.MALE ? server.getStrength() : server.getCharm()));
+                    writer.write(server.getFirstName() + "," + server.getNickname() + "," + server.getWallet() + ","
+                            + server.getSignificantShout() + ",SERVER," + server.getGender() + ","
+                            + (server.getGender() == Gender.MALE ? server.getStrength() : server.getCharm()));
                 } else if (human instanceof Supplier) {
-                    writer.write(human.getFirstName() + "," + human.getNickname() + "," + human.getWallet() + "," + human.getSignificantShout() + ",SUPPLIER");
+                    writer.write(human.getFirstName() + "," + human.getNickname() + "," + human.getWallet() + ","
+                            + human.getSignificantShout() + ",SUPPLIER");
                 }
                 writer.newLine();
             }
@@ -229,7 +237,10 @@ public class PubEnvironment {
     public static void saveClientsToFile(List<Client> clients, String filePath) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
             for (Client client : clients) {
-                writer.write(client.getFirstName() + "," + client.getNickname() + "," + client.getWallet() + "," + client.getSignificantShout() + "," + client.getGender() + "," + client.getFavoriteDrink().getName() + "," + client.getBackupDrink().getName() + "," + client.getClothingOrJewelry());
+                writer.write(client.getFirstName() + "," + client.getNickname() + "," + client.getWallet() + ","
+                        + client.getSignificantShout() + "," + client.getGender() + ","
+                        + client.getFavoriteDrink().getName() + "," + client.getBackupDrink().getName() + ","
+                        + client.getClothingOrJewelry());
                 writer.newLine();
             }
         } catch (IOException e) {
@@ -292,21 +303,21 @@ public class PubEnvironment {
     public static int getIntInput(Scanner scanner, int min, int max) {
         if (min > max) {
             System.out.println("No valid options available.");
-            return -1;  // Indicate an invalid input
+            return -1; // Indicate an invalid input
         }
         int input = -1;
         boolean valid = false;
         while (!valid) {
             if (scanner.hasNextInt()) {
                 input = scanner.nextInt();
-                scanner.nextLine();  // Consume newline
+                scanner.nextLine(); // Consume newline
                 if (input >= min && input <= max) {
                     valid = true;
                 } else {
                     System.out.println("Please enter a number between " + min + " and " + max + ".");
                 }
             } else if (scanner.hasNextLine()) {
-                scanner.nextLine();  // Consume invalid input
+                scanner.nextLine(); // Consume invalid input
                 System.out.println("Invalid input. Please enter a number.");
             } else {
                 System.out.println("No input available.");
@@ -323,14 +334,14 @@ public class PubEnvironment {
         while (!valid) {
             if (scanner.hasNextDouble()) {
                 input = scanner.nextDouble();
-                scanner.nextLine();  // Consume newline
+                scanner.nextLine(); // Consume newline
                 if (input >= 0) {
                     valid = true;
                 } else {
                     System.out.println("Please enter a positive number.");
                 }
             } else if (scanner.hasNextLine()) {
-                scanner.nextLine();  // Consume invalid input
+                scanner.nextLine(); // Consume invalid input
                 System.out.println("Invalid input. Please enter a number.");
             } else {
                 System.out.println("No input available.");

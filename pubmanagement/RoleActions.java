@@ -3,6 +3,10 @@ package pubmanagement;
 import utils.*;
 
 import java.util.Scanner;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class RoleActions {
@@ -87,104 +91,129 @@ public class RoleActions {
         }
     }
 
-  // Actions for Server
-public static void serverActions(Scanner scanner, Bar bar, List<Client> clients, List<Drink> drinks) {
-    boolean keepGoing = true;
+    // Actions for Server
+    public static void serverActions(Scanner scanner, Bar bar, List<Client> clients, List<Drink> drinks) {
+        boolean keepGoing = true;
 
-    List<Server> servers = bar.getServers();
+        List<Server> servers = bar.getServers();
 
-    while (true) {
-        System.out.println("\nYou are a Server. Choose an option:");
-        System.out.println("1. Select an existing server");
-        System.out.println("2. Add a custom server");
-        System.out.println("3. Quit to main menu");
+        while (true) {
+            System.out.println("\nYou are a Server. Choose an option:");
+            System.out.println("1. Select an existing server");
+            System.out.println("2. Add a custom server");
+            System.out.println("3. Quit to main menu");
 
-        int serverChoice = PubEnvironment.getIntInput(scanner, 1, 3);
-        if (serverChoice == -1) return;
-
-        Server chosenServer = null;
-
-        if (serverChoice == 1) {
-            if (servers.isEmpty()) {
-                System.out.println("There are no servers available.");
+            int serverChoice = PubEnvironment.getIntInput(scanner, 1, 3);
+            if (serverChoice == -1)
                 return;
+
+            Server chosenServer = null;
+
+            if (serverChoice == 1) {
+                if (servers.isEmpty()) {
+                    System.out.println("There are no servers available.");
+                    return;
+                }
+
+                System.out.println("\nChoose a server from the available list:");
+                for (int i = 0; i < servers.size(); i++) {
+                    System.out.println((i + 1) + ". " + servers.get(i).getFirstName());
+                }
+                int serverIndex = PubEnvironment.getIntInput(scanner, 1, servers.size());
+                if (serverIndex == -1)
+                    return; // Invalid input
+                chosenServer = servers.get(serverIndex - 1);
+
+            } else if (serverChoice == 2) {
+                // Create a custom server
+                System.out.print("Enter server's first name: ");
+                String firstName = scanner.nextLine();
+                System.out.print("Enter server's nickname: ");
+                String nickname = scanner.nextLine();
+                System.out.print("Enter server's wallet balance: ");
+                double wallet = PubEnvironment.getDoubleInput(scanner);
+
+                chosenServer = new Server(firstName, nickname, wallet);
+                servers.add(chosenServer); // Add the custom server to the list
+                System.out.println("Custom server added: " + chosenServer.getFirstName());
+            } else if (serverChoice == 3) {
+                return; // Return to main menu
             }
 
-            System.out.println("\nChoose a server from the available list:");
-            for (int i = 0; i < servers.size(); i++) {
-                System.out.println((i + 1) + ". " + servers.get(i).getFirstName());
-            }
-            int serverIndex = PubEnvironment.getIntInput(scanner, 1, servers.size());
-            if (serverIndex == -1) return; // Invalid input
-            chosenServer = servers.get(serverIndex - 1);
+            if (chosenServer != null) {
+                while (keepGoing) {
+                    System.out.println("\nWhat would you like to do?");
+                    System.out.println("1. View Profile");
+                    System.out.println("2. Take an order from a client");
+                    System.out.println("3. Serve a client");
+                    System.out.println("4. Quit to main menu");
 
-        } else if (serverChoice == 2) {
-            // Create a custom server
-            System.out.print("Enter server's first name: ");
-            String firstName = scanner.nextLine();
-            System.out.print("Enter server's nickname: ");
-            String nickname = scanner.nextLine();
-            System.out.print("Enter server's wallet balance: ");
-            double wallet = PubEnvironment.getDoubleInput(scanner);
+                    int action = PubEnvironment.getIntInput(scanner, 1, 4);
 
-            chosenServer = new Server(firstName, nickname, wallet);
-            servers.add(chosenServer);  // Add the custom server to the list
-            System.out.println("Custom server added: " + chosenServer.getFirstName());
-        } else if (serverChoice == 3) {
-            return; // Return to main menu
-        }
-
-        if (chosenServer != null) {
-            while (keepGoing) {
-                System.out.println("\nWhat would you like to do?");
-                System.out.println("1. View Profile");
-                System.out.println("2. Take an order from a client");
-                System.out.println("3. Serve a client");
-                System.out.println("4. Quit to main menu");
-
-                int action = PubEnvironment.getIntInput(scanner, 1, 4);
-
-                switch (action) {
-                    case 1 -> {
-                        // View server profile
-                        System.out.println("\nServer Profile:");
-                        System.out.println("Name: " + chosenServer.getFirstName());
-                        System.out.println("Nickname: " + chosenServer.getNickname());
-                        System.out.println("Wallet: " + chosenServer.getWallet());
-                    }
-                    case 2 -> {
-                        // Take order from a client
-                        Client client = chooseClient(scanner, clients);
-                        if (client != null) {
-                            chosenServer.receiveOrder(client);
+                    switch (action) {
+                        case 1 -> {
+                            // View server profile
+                            System.out.println("\nServer Profile:");
+                            System.out.println("Name: " + chosenServer.getFirstName());
+                            System.out.println("Nickname: " + chosenServer.getNickname());
+                            System.out.println("Wallet: " + chosenServer.getWallet());
                         }
-                    }
-                    case 3 -> {
-                        // Serve a client
-                        Client client = chooseClient(scanner, clients);
-                        if (client != null) {
-                            Drink drink = chooseDrink(scanner, bar.getAvailableDrinks());
-                            if (drink != null) {
-                                chosenServer.serve(client, drink);
+                        case 2 -> {
+                            // Take order from a client
+                            Client client = chooseClient(scanner, clients);
+                            if (client != null) {
+                                chosenServer.receiveOrder(client);
                             }
                         }
+                        case 3 -> {
+                            // Serve a client
+                            Client client = chooseClient(scanner, clients);
+                            if (client != null) {
+                                Drink drink = chooseDrink(scanner, bar.getAvailableDrinks());
+                                if (drink != null) {
+                                    chosenServer.serve(client, drink);
+                                }
+                            }
+                        }
+                        case 4 -> keepGoing = false; // Return to main menu
+                        default -> System.out.println("Invalid action, try again.");
                     }
-                    case 4 -> keepGoing = false; // Return to main menu
-                    default -> System.out.println("Invalid action, try again.");
                 }
             }
         }
     }
-}
 
+    private static final String DEFAULT_DRINKS_FILE = "./data/default_drinks.txt";
+    static List<Drink> drinks = loadDrinksFromFile(DEFAULT_DRINKS_FILE);
 
-// Actions for Supplier
-public static void supplierActions(Scanner scanner, Supplier supplier, Bar bar) {
+    // Method to load drinks from a file
+    public static List<Drink> loadDrinksFromFile(String filePath) {
+        List<Drink> drinks = new ArrayList<>();
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] data = line.split(",");
+                if (data.length < 4)
+                    continue;
+                String name = data[0];
+                double salePrice = Double.parseDouble(data[1]);
+                double purchasePrice = Double.parseDouble(data[2]);
+                int alcoholPoints = Integer.parseInt(data[3]);
+                drinks.add(new Drink(name, salePrice, purchasePrice, alcoholPoints));
+            }
+        } catch (IOException e) {
+            System.out.println("Error loading drinks from file: " + e.getMessage());
+        }
+        return drinks;
+    }
+
+ // Actions for Supplier
+ public static void supplierActions(Scanner scanner, Supplier supplier, Bar bar, List<Drink> drinks) {
     boolean keepGoing = true;
 
     while (keepGoing) {
         System.out.println("\nYou are the Supplier. What would you like to do?");
-        System.out.println("1. Deliver drinks to the bar");
+        System.out.println("1. Supply drinks to the bar");
         System.out.println("2. Get paid by the patronne");
         System.out.println("3. Check amount owed");
         System.out.println("4. Quit to main menu");
@@ -194,7 +223,7 @@ public static void supplierActions(Scanner scanner, Supplier supplier, Bar bar) 
         switch (action) {
             case 1 -> {
                 // Deliver fixed quantity of drinks to the bar
-                supplier.deliverDrinks(bar);
+                supplier.deliverDrinks(bar, drinks);
             }
             case 2 -> {
                 // Get paid by the patronne
@@ -210,97 +239,98 @@ public static void supplierActions(Scanner scanner, Supplier supplier, Bar bar) 
     }
 }
 
+    // Actions for Client
+    public static void clientActions(Scanner scanner, Bar bar, List<Client> clients, List<Drink> drinks) {
+        boolean keepGoing = true;
 
-// Actions for Client
-public static void clientActions(Scanner scanner, Bar bar, List<Client> clients, List<Drink> drinks) {
-    boolean keepGoing = true;
-
-    System.out.println("\nYou are a Client. Choose a client or create a new one:");
-    System.out.println("0. Create a new client");
-    for (int i = 0; i < clients.size(); i++) {
-        System.out.println((i + 1) + ". " + clients.get(i).getFirstName());
-    }
-    int clientChoice = PubEnvironment.getIntInput(scanner, 0, clients.size());
-    Client chosenClient;
-
-    if (clientChoice == -1)
-        return; // Invalid input
-
-    if (clientChoice == 0) {
-        chosenClient = createNewClient(scanner, drinks);
-        if (chosenClient != null) {
-            clients.add(chosenClient);
-            bar.addClient(chosenClient);
-        } else {
-            System.out.println("Failed to create a new client.");
-            return;
+        System.out.println("\nYou are a Client. Choose a client or create a new one:");
+        System.out.println("0. Create a new client");
+        for (int i = 0; i < clients.size(); i++) {
+            System.out.println((i + 1) + ". " + clients.get(i).getFirstName());
         }
-    } else {
-        chosenClient = clients.get(clientChoice - 1);
-    }
+        int clientChoice = PubEnvironment.getIntInput(scanner, 0, clients.size());
+        Client chosenClient;
 
-    while (keepGoing) {
-        System.out.println("\nWhat would you like to do?");
-        System.out.println("1. View Profile");
-        System.out.println("2. Order a drink");
-        System.out.println("3. Pay for a drink");
-        System.out.println("4. Change gender");
-        System.out.println("5. Quit to main menu");
+        if (clientChoice == -1)
+            return; // Invalid input
 
-        int action = PubEnvironment.getIntInput(scanner, 1, 5);
-
-        switch (action) {
-            case 1 -> {
-                viewClientProfile(chosenClient);
+        if (clientChoice == 0) {
+            chosenClient = createNewClient(scanner, drinks);
+            if (chosenClient != null) {
+                clients.add(chosenClient);
+                bar.addClient(chosenClient);
+            } else {
+                System.out.println("Failed to create a new client.");
+                return;
             }
-            case 2 -> {
-                Drink chosenDrink = chooseDrink(scanner, bar.getAvailableDrinks());
-                if (chosenDrink != null) {
-                    chosenClient.receiveDrink(chosenDrink);
+        } else {
+            chosenClient = clients.get(clientChoice - 1);
+        }
+
+        while (keepGoing) {
+            System.out.println("\nWhat would you like to do?");
+            System.out.println("1. View Profile");
+            System.out.println("2. Order a drink");
+            System.out.println("3. Pay for a drink");
+            System.out.println("4. Change gender");
+            System.out.println("5. Quit to main menu");
+
+            int action = PubEnvironment.getIntInput(scanner, 1, 5);
+
+            switch (action) {
+                case 1 -> {
+                    viewClientProfile(chosenClient);
+                }
+                case 2 -> {
+                    Drink chosenDrink = chooseDrink(scanner, bar.getAvailableDrinks());
+                    if (chosenDrink != null) {
+                        chosenClient.receiveDrink(chosenDrink);
+                        // Update client's wallet in the file
+                        PubEnvironment.updateClientInDatabase(chosenClient);
+                    }
+                }
+                case 3 -> {
+                    System.out.println("Enter the amount to pay:");
+                    double amount = PubEnvironment.getDoubleInput(scanner);
+                    chosenClient.pay(amount);
                     // Update client's wallet in the file
                     PubEnvironment.updateClientInDatabase(chosenClient);
                 }
+                case 4 -> {
+                    System.out.println("Choose your new gender:");
+                    System.out.println("1. Male");
+                    System.out.println("2. Female");
+                    int genderChoice = PubEnvironment.getIntInput(scanner, 1, 2);
+                    Gender newGender = (genderChoice == 1) ? Gender.MALE : Gender.FEMALE;
+                    System.out.print("Enter new clothing/jewelry description: ");
+                    String newClothing = scanner.nextLine();
+                    if (newClothing.isEmpty())
+                        newClothing = (newGender == Gender.MALE) ? "T-shirt" : "Necklace";
+                    chosenClient.changeGender(newGender, newClothing);
+                    chosenClient.introduce(); // Verify the change
+                    // Update client in the database
+                    PubEnvironment.updateClientInDatabase(chosenClient);
+                }
+                case 5 -> keepGoing = false; // Return to main menu
+                default -> System.out.println("Invalid action, try again.");
             }
-            case 3 -> {
-                System.out.println("Enter the amount to pay:");
-                double amount = PubEnvironment.getDoubleInput(scanner);
-                chosenClient.pay(amount);
-                // Update client's wallet in the file
-                PubEnvironment.updateClientInDatabase(chosenClient);
-            }
-            case 4 -> {
-                System.out.println("Choose your new gender:");
-                System.out.println("1. Male");
-                System.out.println("2. Female");
-                int genderChoice = PubEnvironment.getIntInput(scanner, 1, 2);
-                Gender newGender = (genderChoice == 1) ? Gender.MALE : Gender.FEMALE;
-                System.out.print("Enter new clothing/jewelry description: ");
-                String newClothing = scanner.nextLine();
-                if (newClothing.isEmpty())
-                    newClothing = (newGender == Gender.MALE) ? "T-shirt" : "Necklace";
-                chosenClient.changeGender(newGender, newClothing);
-                chosenClient.introduce(); // Verify the change
-                // Update client in the database
-                PubEnvironment.updateClientInDatabase(chosenClient);
-            }
-            case 5 -> keepGoing = false; // Return to main menu
-            default -> System.out.println("Invalid action, try again.");
         }
     }
-}
 
-// Method to view client profile
-private static void viewClientProfile(Client client) {
-    System.out.println("\n--- Client Profile ---");
-    System.out.println("Name: " + client.getFirstName() + " " + client.getNickname());
-    System.out.println("Gender: " + client.getGender());
-    System.out.println("Balance: $" + client.getWallet());
-    System.out.println("Favorite Drink: " + (client.getFavoriteDrink() != null ? client.getFavoriteDrink().getName() : "None"));
-    System.out.println("Backup Drink: " + (client.getBackupDrink() != null ? client.getBackupDrink().getName() : "None"));
-    System.out.println("Significant Shout: " + client.getSignificantShout());
-    System.out.println("Clothing/Jewelry: " + client.getClothingOrJewelry());
-    System.out.println("----------------------\n");
-}
+    // Method to view client profile
+    private static void viewClientProfile(Client client) {
+        System.out.println("\n--- Client Profile ---");
+        System.out.println("Name: " + client.getFirstName() + " " + client.getNickname());
+        System.out.println("Gender: " + client.getGender());
+        System.out.println("Balance: $" + client.getWallet());
+        System.out.println("Favorite Drink: "
+                + (client.getFavoriteDrink() != null ? client.getFavoriteDrink().getName() : "None"));
+        System.out.println(
+                "Backup Drink: " + (client.getBackupDrink() != null ? client.getBackupDrink().getName() : "None"));
+        System.out.println("Significant Shout: " + client.getSignificantShout());
+        System.out.println("Clothing/Jewelry: " + client.getClothingOrJewelry());
+        System.out.println("----------------------\n");
+    }
 
     // Helper method to choose a client
     public static Client chooseClient(Scanner scanner, List<Client> clients) {
@@ -321,7 +351,7 @@ private static void viewClientProfile(Client client) {
     // Helper method to choose a drink
     public static Drink chooseDrink(Scanner scanner, List<Drink> drinks) {
         if (drinks.isEmpty()) {
-            System.out.println("No drinks available.");
+            System.out.println("No drinks available. Supplier must first deliver drinks to pub.");
             return null;
         }
         System.out.println("Choose a drink:");

@@ -2,8 +2,6 @@ package pubmanagement;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
-import java.util.Scanner;
 
 /**
  * Class representing the supplier who delivers drinks to the bar.
@@ -11,9 +9,6 @@ import java.util.Scanner;
 public class Supplier extends Human {
     private double amountOwed;  // Amount owed to the supplier by the bar
     private List<DrinkDelivery> pendingDeliveries;  // List of pending deliveries
-    private static final int MIN_DELIVERY_QUANTITY = 3;
-    private static final int MAX_DELIVERY_QUANTITY = 5;
-    private Random random = new Random();
 
     /**
      * Constructor for the Supplier class.
@@ -37,18 +32,16 @@ public class Supplier extends Human {
     // Methods
 
     /**
-     * Delivers a fixed quantity of 3-5 units of each drink to the bar and updates the bar's stock.
+     * Delivers 5 units of each drink to the bar and updates the bar's stock.
      *
-     * @param bar The bar receiving the delivery.
+     * @param bar    The bar receiving the delivery.
+     * @param drinks The list of drinks available for delivery.
      */
-    public void deliverDrinks(Bar bar) {
-        List<Drink> availableDrinks = bar.getFixedDrinks();
-
+    public void deliverDrinks(Bar bar, List<Drink> drinks) {
         System.out.println("\nDelivering drinks to the bar...");
 
-        for (Drink drink : availableDrinks) {
-            // Randomly select a quantity between 3 and 5
-            int quantity = MIN_DELIVERY_QUANTITY + random.nextInt(MAX_DELIVERY_QUANTITY - MIN_DELIVERY_QUANTITY + 1);
+        for (Drink drink : drinks) {
+            int quantity = 5; // Fixed quantity of 5 units for each drink
 
             // Add to pending deliveries
             pendingDeliveries.add(new DrinkDelivery(drink, quantity));
@@ -61,13 +54,15 @@ public class Supplier extends Human {
             amountOwed += amountForDrink;
 
             System.out.println(getNickname() + " delivered " + quantity + " units of " + drink.getName() + ".");
-            System.out.println("Amount owed for this delivery: " + amountForDrink + " euros.");
+            System.out.println("Amount owed for this drink: " + amountForDrink + " euros.");
         }
 
         if (pendingDeliveries.isEmpty()) {
-            System.out.println("No drinks were delivered. The bar has no pending orders.");
+            System.out.println("No drinks were delivered.");
         } else {
+            System.out.println("---------------------------------------------------");
             System.out.println("Total amount owed for this delivery: " + amountOwed + " euros.");
+            System.out.println("---------------------------------------------------");
         }
     }
 
@@ -119,14 +114,6 @@ public class Supplier extends Human {
         public DrinkDelivery(Drink drink, int quantity) {
             this.drink = drink;
             this.quantity = quantity;
-        }
-
-        public Drink getDrink() {
-            return drink;
-        }
-
-        public int getQuantity() {
-            return quantity;
         }
     }
 }
