@@ -55,14 +55,15 @@ public class Supplier extends Human {
 
             System.out.println(getNickname() + " delivered " + quantity + " units of " + drink.getName() + ".");
             System.out.println("Amount owed for this drink: " + amountForDrink + " euros.");
+            System.out.println("---------------------------------------------------");
         }
 
         if (pendingDeliveries.isEmpty()) {
             System.out.println("No drinks were delivered.");
         } else {
-            System.out.println("---------------------------------------------------");
+            System.out.println("====================================================");
             System.out.println("Total amount owed for this delivery: " + amountOwed + " euros.");
-            System.out.println("---------------------------------------------------");
+            System.out.println("====================================================");
         }
     }
 

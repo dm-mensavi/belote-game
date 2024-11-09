@@ -2,28 +2,15 @@ package belote;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
+import utils.Suit;
+
 
 public class Player {
     private final String name;
     private String teamName;
-    private String skillLevel;  // Added skillLevel attribute
     private final List<Card> hand = new ArrayList<>();
-    private int score = 0;
 
-    // Constructor with name, teamName, and skillLevel
-    public Player(String name, String teamName, String skillLevel) {
-        this.name = name;
-        this.teamName = teamName;
-        this.skillLevel = skillLevel;
-    }
-
-    // Constructor with only name and teamName
-    public Player(String name, String teamName) {
-        this.name = name;
-        this.teamName = teamName;
-    }
-
-    // Constructor with only name
     public Player(String name) {
         this.name = name;
         this.teamName = null;
@@ -42,42 +29,41 @@ public class Player {
         this.teamName = teamName;
     }
 
-    public String getSkillLevel() {
-        return skillLevel;
-    }
-
-    public void setSkillLevel(String skillLevel) {
-        this.skillLevel = skillLevel;
-    }
-
     public List<Card> getHand() {
         return hand;
     }
 
-    public int getScore() {
-        return score;
-    }
-
     // Methods
-    public void receiveHand(List<Card> cards) {
+    public void receiveCards(List<Card> cards) {
         hand.addAll(cards);
-        System.out.println(name + " received a full hand of cards.");
+        System.out.println(name + " received cards.");
     }
 
-    public Card playFirstCard() {
-        if (!hand.isEmpty()) {
-            Card card = hand.remove(0);  // Remove the first card in the hand
-            System.out.println(name + " played: " + card);
-            return card;  // Return the card that was played
-        } else {
-            System.out.println(name + " has no cards left to play.");
-            return null;
+    public Card playCard(Scanner scanner, Suit leadSuit) {
+        System.out.println(name + ", it's your turn to play.");
+        displayHand();
+
+        int choice = -1;
+        while (choice < 1 || choice > hand.size()) {
+            System.out.println("Select a card to play (1-" + hand.size() + "):");
+            if (scanner.hasNextInt()) {
+                choice = scanner.nextInt();
+                scanner.nextLine(); // Consume newline
+            } else {
+                System.out.println("Invalid input. Please enter a number.");
+                scanner.nextLine(); // Consume invalid input
+            }
         }
+        Card selectedCard = hand.remove(choice - 1);
+        System.out.println(name + " played: " + selectedCard);
+        return selectedCard;
     }
 
-    public void addScore(int points) {
-        score += points;
-        System.out.println(name + " earned " + points + " points. Total score: " + score);
+    public void displayHand() {
+        System.out.println(name + "'s hand:");
+        for (int i = 0; i < hand.size(); i++) {
+            System.out.println((i + 1) + ". " + hand.get(i));
+        }
     }
 
     public void resetHand() {

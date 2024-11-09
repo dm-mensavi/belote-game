@@ -6,104 +6,75 @@ public class MainBeloteGame {
     public static void startBeloteGame() {
         Scanner scanner = new Scanner(System.in);
         BeloteGame game = new BeloteGame();
-
-        System.out.println("Are you a Dealer or a Player? (Enter 'dealer' or 'player')");
-        String role = scanner.nextLine().toLowerCase();
-
-        if (role.equals("dealer")) {
-            dealerActions(scanner, game);
-        } else if (role.equals("player")) {
-            playerActions(scanner, game);
-        } else {
-            System.out.println("Invalid role. Exiting.");
-        }
-    }
-
-    private static void dealerActions(Scanner scanner, BeloteGame game) {
         boolean keepRunning = true;
-    
+
         while (keepRunning) {
-            System.out.println("\nDealer Menu:");
-            System.out.println("Select an option:");
-    
-            int option = 1;
-            boolean canAddPlayer = game.getTeam1().size() < 2 || game.getTeam2().size() < 2;
-    
-            // Display "Add Player" only if there is space on the table
-            if (canAddPlayer && !game.isGameStarted()) {
-                System.out.println(option + ". Add Player to Team");
-                option++;
-            }
-    
-            // Display "Start Game" only if the game has not started and both teams are full
-            if (!game.isGameStarted() && !canAddPlayer) {
-                System.out.println(option + ". Start Game");
-                option++;
-            }
-    
-            // Display game options only after the game has started
-            if (game.isGameStarted()) {
-                System.out.println(option + ". Deal Cards");
-                option++;
-                System.out.println(option + ". Play Round");
-                option++;
-                System.out.println(option + ". Declare Winner");
-                option++;
-            }
-    
-            System.out.println(option + ". Exit");
-    
-            int choice = scanner.nextInt();
-            scanner.nextLine(); // Consume newline
-    
+            System.out.println("\nBelote Game Menu:");
+            System.out.println("1. Add Player");
+            System.out.println("2. Start Game");
+            System.out.println("3. Play Game");
+            System.out.println("4. Reset Game");
+            System.out.println("5. Exit");
+
+            int choice = getIntInput(scanner, 1, 5);
+
             switch (choice) {
                 case 1 -> {
-                    if (canAddPlayer && !game.isGameStarted()) {
+                    if (game.getAllPlayers().size() < 4) {
                         System.out.print("Enter player name: ");
                         String name = scanner.nextLine();
                         game.addPlayerToTeam(scanner, new Player(name));
-                    } else if (!game.isGameStarted() && !canAddPlayer) {
-                        game.startGame();
-                    } else if (game.isGameStarted()) {
-                        game.dealCards();
                     } else {
-                        System.out.println("Invalid option.");
+                        System.out.println("All player slots are full.");
                     }
                 }
                 case 2 -> {
-                    if (!game.isGameStarted() && !canAddPlayer) {
-                        game.startGame();
-                    } else if (game.isGameStarted()) {
-                        game.playRound();
+                    if (!game.isGameStarted()) {
+                        game.startGame(scanner);
                     } else {
-                        keepRunning = false;
+                        System.out.println("Game is already started.");
                     }
                 }
                 case 3 -> {
                     if (game.isGameStarted()) {
-                        game.declareWinner();
+                        boolean continuePlaying = game.playGame(scanner);
+                        if (!continuePlaying) {
+                            keepRunning = false; // If players choose to exit mid-game, stop the loop
+                        }
                     } else {
-                        System.out.println("Invalid option.");
+                        System.out.println("You need to start the game first.");
                     }
                 }
-                case 4 -> keepRunning = false;
+                case 4 -> {
+                    game.resetGame();
+                    System.out.println("Game has been reset.");
+                }
+                case 5 -> {
+                    keepRunning = false;
+                    System.out.println("Exiting the game. Goodbye!");
+                }
                 default -> System.out.println("Invalid choice. Please try again.");
             }
         }
     }
-    
 
-    private static void playerActions(Scanner scanner, BeloteGame game) {
-        System.out.print("Enter your name: ");
-        String playerName = scanner.nextLine();
-        Player player = new Player(playerName);
-        game.addPlayerToTeam(scanner, player);
-
-        if (game.isGameStarted()) {
-            game.dealCards();
-            game.playRound();
-        } else {
-            System.out.println("Waiting for other players to join...");
+    private static int getIntInput(Scanner scanner, int min, int max) {
+        int input = -1;
+        boolean valid = false;
+        while (!valid) {
+            if (scanner.hasNextInt()) {
+                input = scanner.nextInt();
+                scanner.nextLine(); // Consume newline
+                if (input >= min && input <= max) {
+                    valid = true;
+                } else {
+                    System.out.println("Please enter a number between " + min + " and " + max + ".");
+                }
+            } else {
+                System.out.println("Invalid input. Please enter a number.");
+                scanner.nextLine(); // Consume invalid input
+            }
         }
+        return input;
     }
 }

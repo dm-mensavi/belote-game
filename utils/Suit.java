@@ -1,11 +1,19 @@
 package utils;
 
-/**
- * Enum representing the four suits in a deck of cards.
- */
 public enum Suit {
-    HEARTS,
-    DIAMONDS,
-    CLUBS,
-    SPADES;
+    HEARTS("Hearts"),
+    DIAMONDS("Diamonds"),
+    CLUBS("Clubs"),
+    SPADES("Spades");
+
+    private final String displayName;
+
+    Suit(String displayName) {
+        this.displayName = displayName;
+    }
+
+    @Override
+    public String toString() {
+        return displayName;
+    }
 }
