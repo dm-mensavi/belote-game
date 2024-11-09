@@ -151,7 +151,7 @@ public class BeloteGame {
 
         int rounds = 8; // Total number of rounds
         for (int i = 0; i < rounds; i++) {
-            System.out.println("Do you want to continue playing? (1. Yes, 2. Exit)");
+            System.out.println("Select 1 to continue. (1. Yes, 2. Exit)");
             int continueChoice = getIntInput(scanner, 1, 2);
             if (continueChoice == 2) {
                 System.out.println("Exiting the game mid-round. Goodbye!");

@@ -1,5 +1,5 @@
-Marie,PatronneMarie,4800.0,Bienvenue!,PATRONNE
+Marie,PatronneMarie,5000.0,Bienvenue!,PATRONNE
 Paul,BartenderPaul,2000.0,Your drink is ready!,BARTENDER
 Alice,AliceTheGreat,1000.0,Let's go!,SERVER,FEMALE,8
 John,JohnTheStrong,900.0,Here we go!,SERVER,MALE,10
-Sam,SamTheSupplier,5200.0,Delivering the best!,SUPPLIER
+Sam,SamTheSupplier,5000.0,Delivering the best!,SUPPLIER

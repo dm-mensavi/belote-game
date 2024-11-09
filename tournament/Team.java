@@ -1,79 +1,80 @@
 package tournament;
-
-import belote.Player;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Class representing a team in the belote tournament.
+ * Class representing a team in the tournament.
  */
 public class Team {
     private String teamName;
-    private List<Player> players;
-    private int score;
+    private List<TournamentPlayer> players;
+    private int totalPoints;
+    private int rank;
 
     /**
-     * Constructor for the Team class.
-     * @param teamName the name of the team.
+     * Constructor for Team.
+     * @param teamName The name of the team.
      */
     public Team(String teamName) {
         this.teamName = teamName;
         this.players = new ArrayList<>();
-        this.score = 0;
+        this.totalPoints = 0;
+        this.rank = 0;
     }
 
     // Getters and Setters
+
     public String getTeamName() {
         return teamName;
     }
 
-    public List<Player> getPlayers() {
+    public List<TournamentPlayer> getPlayers() {
         return players;
     }
 
-    public int getScore() {
-        return score;
+    public int getTotalPoints() {
+        return totalPoints;
+    }
+
+    public int getRank() {
+        return rank;
+    }
+
+    public void setRank(int rank) {
+        this.rank = rank;
     }
 
     /**
-     * Adds a player to the team if there are fewer than 2 players.
-     * @param player the player to add.
+     * Adds a player to the team.
+     * @param player The player to add.
+     * @throws Exception If the team already has two players.
      */
-    public void addPlayer(Player player) {
+    public void addPlayer(TournamentPlayer player) throws Exception {
         if (players.size() < 2) {
             players.add(player);
-            System.out.println(player.getName() + " joined team " + teamName);
         } else {
-            System.out.println("Team " + teamName + " already has 2 players.");
+            throw new Exception("Team " + teamName + " already has two players.");
         }
     }
 
     /**
-     * Adds points to the team's score.
-     * @param points the points to add.
+     * Adds points to the team's total points.
+     * @param points The points to add.
      */
-    public void addScore(int points) {
-        score += points;
-        System.out.println("Team " + teamName + " earned " + points + " points. Total score: " + score);
+    public void addPoints(int points) {
+        totalPoints += points;
     }
 
     /**
-     * Resets the team's score.
+     * Displays the team's information.
      */
-    public void resetScore() {
-        score = 0;
-        System.out.println("Team " + teamName + "'s score has been reset.");
-    }
-
-    /**
-     * Gets information about the team.
-     * @return team info as a string.
-     */
-    public String getTeamInfo() {
-        StringBuilder info = new StringBuilder("Team " + teamName + " with players: ");
-        for (Player player : players) {
-            info.append(player.getName()).append(" ");
+    public void displayTeamInfo() {
+        System.out.println("Team: " + teamName);
+        System.out.println("Players:");
+        for (TournamentPlayer player : players) {
+            System.out.println("- " + player.getName());
         }
-        return info.toString();
+        System.out.println("Total Points: " + totalPoints);
+        System.out.println("Rank: " + rank);
     }
 }
