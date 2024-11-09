@@ -1,7 +1,4 @@
-
 package tournament;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Class representing a match between two teams.
@@ -26,7 +23,7 @@ public class Match {
         this.isPlayed = false;
     }
 
-    // Getters
+    // Existing getters...
 
     public Team getTeamA() {
         return teamA;
@@ -122,7 +119,7 @@ public class Match {
      */
     private void buyDrinks(Team losers, Team winners) {
         System.out.println("Team " + losers.getTeamName() + " buys drinks for team " + winners.getTeamName());
-        // Implement logic to deduct money from losers and add to bar revenue
+        // Since we don't have a Bar or drinks, we can just display this message.
     }
 
     /**

@@ -66,7 +66,7 @@ public class BeloteGame {
                 }
             }
 
-            System.out.println("Game started with Team 1 vs. Team 2.");
+            System.out.println("Game started with Team 1 vs. Team 2. Select 'Play Game' to play");
         } else {
             System.out.println("Each team must have 2 players to start the game.");
         }
@@ -151,7 +151,7 @@ public class BeloteGame {
 
         int rounds = 8; // Total number of rounds
         for (int i = 0; i < rounds; i++) {
-            System.out.println("Select 1 to continue. (1. Yes, 2. Exit)");
+            System.out.println("Enter 1 to continue or 2 to Exit.");
             int continueChoice = getIntInput(scanner, 1, 2);
             if (continueChoice == 2) {
                 System.out.println("Exiting the game mid-round. Goodbye!");

@@ -1,20 +1,12 @@
 import pubmanagement.PubEnvironment;
-import pubmanagement.Bar;
-import pubmanagement.Patronne;
-import pubmanagement.Bartender;
-import tournament.TournamentEnvironment; // Uncommented this line
 import belote.MainBeloteGame;
+import tournament.TournamentEnvironment;
 import java.util.Scanner;
 
 public class MainApp {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);  // Single Scanner instance
         boolean keepRunning = true;
-
-        // Declare variables for bar-related elements, but only initialize them in the tournament
-        Bar bar = null;
-        Patronne patronne = new Patronne("Marie", "BossLady", 1000, "Let's celebrate!", null); // Initialize the Patronne
-        Bartender bartender = new Bartender("Paul", "MasterPour", 500, "One for everyone!"); // Initialize the Bartender
 
         while (keepRunning) {
             System.out.println("\nWelcome to the Bar Management and Belote Game App!");
@@ -29,15 +21,9 @@ public class MainApp {
                 scanner.nextLine();  // Consume newline
 
                 switch (choice) {
-                    case 1 -> PubEnvironment.initializePub(scanner);  // This does not affect the bar instance
+                    case 1 -> PubEnvironment.initializePub(scanner);  // Pass Scanner
                     case 2 -> MainBeloteGame.startBeloteGame();
-                    case 3 -> {
-                        // Initialize the Bar instance only when the user selects "Play Belote Tournament"
-                        if (bar == null) {
-                            bar = new Bar("At Marie's Pub", patronne, bartender);
-                        }
-                        TournamentEnvironment.startTournament(scanner, bar);
-                    }
+                    case 3 -> TournamentEnvironment.startTournament(scanner, null);
                     case 4 -> {
                         System.out.println("Exiting the application. Goodbye!");
                         keepRunning = false;

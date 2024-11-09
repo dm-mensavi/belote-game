@@ -1,42 +1,25 @@
 package tournament;
-import pubmanagement.Bartender;
-import pubmanagement.Patronne;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 /**
- * Class managing the tournament.
+ * Class representing a belote tournament.
  */
 public class Tournament {
-    private String name;
-    private double registrationFee;
-    private Bartender bartender;
-    private Patronne patronne;
     private List<Team> teams;
     private List<Match> matches;
-    private boolean isStarted;
-    private double totalFeesCollected;
+    private boolean isOngoing;
 
     /**
-     * Constructor for Tournament.
-     * @param name The name of the tournament.
-     * @param registrationFee The registration fee per team.
-     * @param bartender The bartender responsible for the score sheet.
-     * @param patronne The patronne of the bar.
+     * Constructor for the Tournament class.
      */
-    public Tournament(String name, double registrationFee, Bartender bartender, Patronne patronne) {
-        this.name = name;
-        this.registrationFee = registrationFee;
-        this.bartender = bartender;
-        this.patronne = patronne;
+    public Tournament() {
         this.teams = new ArrayList<>();
         this.matches = new ArrayList<>();
-        this.isStarted = false;
-        this.totalFeesCollected = 0;
+        this.isOngoing = false;
     }
-
-    // Getters
 
     public List<Team> getTeams() {
         return teams;
@@ -46,38 +29,103 @@ public class Tournament {
         return matches;
     }
 
-    public boolean isStarted() {
-        return isStarted;
+    public boolean isOngoing() {
+        return isOngoing;
     }
 
     /**
-     * Registers a team for the tournament.
-     * @param team The team to register.
-     * @throws Exception If the tournament has already started.
+     * Registers a team for the tournament if it hasn't started and if the team is unique.
+     * @param team the team to register.
      */
-    public void registerTeam(Team team) throws Exception {
-        if (isStarted) {
-            throw new Exception("Cannot register team. Tournament has already started.");
+    public void registerTeam(Team team) {
+        if (isOngoing) {
+            System.out.println("The tournament has already started. No more teams can join.");
+        } else if (teams.contains(team)) {
+            System.out.println("Team " + team.getTeamName() + " is already registered.");
+        } else {
+            teams.add(team);
+            System.out.println("Team " + team.getTeamName() + " has been registered for the tournament.");
         }
-        teams.add(team);
-        totalFeesCollected += registrationFee;
     }
 
     /**
-     * Starts the tournament.
-     * Generates the schedule of matches.
-     * @throws Exception If there are less than two teams.
+     * Starts the tournament by generating matches if there are enough teams.
      */
-    public void startTournament() throws Exception {
-        if (teams.size() < 2) {
-            throw new Exception("Cannot start tournament. At least two teams are required.");
+    public void startTournament(Scanner scanner) throws Exception {
+        while (teams.size() < 2) {
+            System.out.println("A tournament requires at least 2 teams.");
+            System.out.println("Please register a new team.");
+    
+            // Register a new team
+            System.out.print("Enter team name: ");
+            String teamName = scanner.nextLine();
+            Team team = new Team(teamName);
+    
+            // Add two players to the team
+            for (int i = 1; i <= 2; i++) {
+                System.out.print("Enter player " + i + " name for team " + teamName + ": ");
+                String playerName = scanner.nextLine();
+    
+                // Display skill level options
+                System.out.println("Choose skill level for " + playerName + ":");
+                System.out.println("1. Beginner");
+                System.out.println("2. Novice");
+                System.out.println("3. Intermediate");
+                System.out.println("4. Average");
+                System.out.println("5. Good");
+                System.out.println("6. Expert");
+    
+                // Get the skill level choice from the user
+                int skillChoice = getIntInput(scanner, 1, 6);
+                String skillLevel = convertSkillChoiceToLevel(skillChoice);
+    
+                TournamentPlayer player = new TournamentPlayer(playerName, skillLevel);
+                team.addPlayer(player);
+                System.out.println(playerName + " joined team " + teamName + " with skill level " + skillLevel);
+            }
+    
+            registerTeam(team);
         }
-        isStarted = true;
+    
+        isOngoing = true;
         generateMatches();
+        System.out.println("The belote tournament has started with " + teams.size() + " teams!");
     }
-
+    
+    // Helper method to convert skill choice to skill level string
+    private String convertSkillChoiceToLevel(int choice) {
+        return switch (choice) {
+            case 1 -> "Beginner";
+            case 2 -> "Novice";
+            case 3 -> "Intermediate";
+            case 4 -> "Average";
+            case 5 -> "Good";
+            case 6 -> "Expert";
+            default -> "Unknown";
+        };
+    }
+    
+    // Method to handle integer input with range checking
+    private int getIntInput(Scanner scanner, int min, int max) {
+        int input;
+        while (true) {
+            if (scanner.hasNextInt()) {
+                input = scanner.nextInt();
+                scanner.nextLine(); // Consume newline
+                if (input >= min && input <= max) {
+                    return input;
+                } else {
+                    System.out.println("Please enter a number between " + min + " and " + max + ".");
+                }
+            } else {
+                System.out.println("Invalid input. Please enter a number.");
+                scanner.nextLine(); // Consume invalid input
+            }
+        }
+    }
+    
     /**
-     * Generates all possible matches between teams.
+     * Generates all matches for the tournament.
      */
     private void generateMatches() {
         matches.clear();
@@ -89,91 +137,46 @@ public class Tournament {
     }
 
     /**
-     * Displays the current score sheet.
+     * Displays the score sheet for the tournament.
      */
     public void displayScoreSheet() {
-        System.out.println("\nCurrent Score Sheet:");
-        System.out.printf("%-10s", "Team");
+        System.out.println("Current Tournament Score Sheet:");
         for (Team team : teams) {
-            System.out.printf("%-10s", team.getTeamName());
-        }
-        System.out.printf("%-10s%-10s\n", "Total", "Rank");
-
-        for (Team teamA : teams) {
-            System.out.printf("%-10s", teamA.getTeamName());
-            for (Team teamB : teams) {
-                if (teamA == teamB) {
-                    System.out.printf("%-10s", "-");
-                } else {
-                    Match match = findMatch(teamA, teamB);
-                    if (match != null && match.isPlayed()) {
-                        if (match.getTeamA() == teamA) {
-                            System.out.printf("%-10d", match.getScoreA());
-                        } else {
-                            System.out.printf("%-10d", match.getScoreB());
-                        }
-                    } else {
-                        System.out.printf("%-10s", "");
-                    }
-                }
-            }
-            System.out.printf("%-10d%-10d\n", teamA.getTotalPoints(), teamA.getRank());
+            System.out.println(team.getTeamName() + ": " + team.getScore() + " points");
         }
     }
 
     /**
-     * Finds a match between two teams.
-     * @param teamA The first team.
-     * @param teamB The second team.
-     * @return The Match object if found, null otherwise.
-     */
-    private Match findMatch(Team teamA, Team teamB) {
-        for (Match match : matches) {
-            if ((match.getTeamA() == teamA && match.getTeamB() == teamB) ||
-                (match.getTeamA() == teamB && match.getTeamB() == teamA)) {
-                return match;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Updates the ranks of teams based on their total points.
+     * Updates the ranks of the teams based on their scores.
      */
     public void updateTeamRanks() {
-        teams.sort((t1, t2) -> t2.getTotalPoints() - t1.getTotalPoints());
-        int rank = 1;
-        for (Team team : teams) {
-            team.setRank(rank++);
+        teams.sort((t1, t2) -> Integer.compare(t2.getScore(), t1.getScore()));
+        System.out.println("Team ranks updated.");
+    }
+
+    /**
+     * Ends the tournament and announces the winner.
+     */
+    public void endTournament() {
+        if (!isOngoing) {
+            System.out.println("The tournament hasn't started yet.");
+            return;
+        }
+        isOngoing = false;
+        Team winner = getWinner();
+        if (winner != null) {
+            System.out.println("The tournament winner is: " + winner.getTeamName() + " with " + winner.getScore() + " points!");
         }
     }
 
     /**
-     * Distributes the prize money at the end of the tournament.
+     * Determines and returns the winner of the tournament.
+     * @return the winning team.
      */
-    public void distributePrizes() {
-        if (!isStarted) {
-            System.out.println("Tournament has not yet started or is already finished.");
-            return;
+    public Team getWinner() {
+        if (teams.isEmpty()) {
+            return null;
         }
-        isStarted = false;
-
-        updateTeamRanks();
-        Team winner = teams.get(0);
-        double prize = totalFeesCollected * 0.5;
-        double patronneShare = totalFeesCollected - prize;
-
-        System.out.println("Distributing prizes:");
-        System.out.println("Team " + winner.getTeamName() + " wins " + prize + " euros.");
-        System.out.println("Patronne " + patronne.getNickname() + " receives " + patronneShare + " euros.");
-
-        // Update winner's players' wallets
-        for (TournamentPlayer player : winner.getPlayers()) {
-            double share = prize / 2; // Assuming two players
-            player.getHuman().setWallet(player.getHuman().getWallet() + share);
-        }
-
-        // Update patronne's wallet
-        patronne.setWallet(patronne.getWallet() + patronneShare);
+        return teams.get(0);
     }
 }
