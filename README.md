@@ -130,9 +130,4 @@ This project is licensed under the MIT License. See the `LICENSE` file for detai
 
 ---
 
-## 📧 **Contact**
-For questions or feedback, please email **your-email@example.com**. 💌
-
----
-
 Enjoy managing your bar and playing Belote! 🍻🃏
